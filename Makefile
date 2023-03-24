@@ -5,7 +5,7 @@ GO_VET     := $(GO_CMD) vet
 GO_FMT     := $(GO_CMD) fmt
 GO_LDFLAGS := -ldflags="-s -w" # FYI: https://pkg.go.dev/cmd/link
 GOOS       := $(shell go env GOOS)
-TARGETS    := bin/server
+TARGETS    := bin/server bin/migrate
 
 .PHONEY: default build clean test fmt lint
 
@@ -14,6 +14,8 @@ build: $(TARGETS)
 
 bin/server:
 	env GOOS=$(GOOS) $(GO_BUILD) $(GO_LDFLAGS) -o $@ cmd/server/main.go
+bin/migrate:
+	env GOOS=$(GOOS) $(GO_BUILD) $(GO_LDFLAGS) -o $@ cmd/migrate/main.go
 clean:
 	rm -rf $(TARGETS) ./vendor
 vet:
