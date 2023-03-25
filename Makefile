@@ -14,9 +14,9 @@ else
   RUN_SERVER := $(GO_RUN) cmd/server/main.go -p $(PORT)
 endif
 
-.PHONEY: default build clean test fmt lint
+.PHONEY: default build clean test fmt server db/migrate db/reset
 
-default: fmt vet test build server db/migrate db/reset
+default: fmt vet test build
 build: $(TARGETS)
 s: server
 

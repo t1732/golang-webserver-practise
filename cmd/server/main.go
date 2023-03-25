@@ -1,8 +1,13 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
+	"net/http"
+	"os"
+	"os/signal"
+	"time"
 
 	"golang-webserver-practise/internal/config"
 	infra "golang-webserver-practise/internal/infrastructure"
@@ -32,9 +37,26 @@ func main() {
 		panic(fmt.Errorf("DB init error: %s \n", err))
 	}
 
+	// Setup
 	e := echo.New()
+	e.Logger.SetLevel(config.App.LogLevel())
 	routes.RestRouting(e)
 
-	fmt.Printf("running... mode:%s", appEnv)
-	e.Logger.Fatal(e.Start(":" + Port))
+	// Start server
+	fmt.Printf("running... %s mode", appEnv)
+	go func() {
+		if err := e.Start(":" + Port); err != nil && err != http.ErrServerClosed {
+			e.Logger.Fatal("shutting down the server")
+		}
+	}()
+
+	// FYI: https://echo.labstack.com/cookbook/graceful-shutdown/
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+	<-quit
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := e.Shutdown(ctx); err != nil {
+		e.Logger.Fatal(err)
+	}
 }

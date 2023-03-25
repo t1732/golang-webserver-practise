@@ -5,6 +5,7 @@ import (
 
 	"golang-webserver-practise/pkg/sliceutil"
 
+	"github.com/labstack/gommon/log"
 	"gorm.io/gorm/logger"
 )
 
@@ -45,6 +46,14 @@ func (a *AppConfig) IsStaging() bool {
 
 func (a *AppConfig) IsProduction() bool {
 	return a.Env == appEnvValues[2]
+}
+
+func (a *AppConfig) LogLevel() log.Lvl {
+	if a.IsDevelopment() {
+		return log.DEBUG
+	}
+
+	return log.WARN
 }
 
 func (a *AppConfig) GormLogLevel() logger.LogLevel {
