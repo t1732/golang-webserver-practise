@@ -1,17 +1,27 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net/http"
 
-	"github.com/labstack/echo/v4"
+	"golang-webserver-practise/internal/config"
 	infra "golang-webserver-practise/internal/infrastructure"
+
+	"github.com/labstack/echo/v4"
 )
 
+var appEnv string
+
 func main() {
-	_, err := infra.Init()
-	if err != nil {
-		fmt.Println("db init error: ", err)
+	flagParse()
+
+	if err := config.Init(appEnv); err != nil {
+		panic(fmt.Errorf("Fatal error config file: %s \n", err))
+	}
+
+	if _, err := infra.Init(); err != nil {
+		panic(fmt.Errorf("DB init error: %s \n", err))
 	}
 
 	e := echo.New()
@@ -21,4 +31,9 @@ func main() {
 	})
 
 	e.Logger.Fatal(e.Start(":3000"))
+}
+
+func flagParse() {
+	flag.StringVar(&appEnv, "e", "development", "environment")
+	flag.Parse()
 }

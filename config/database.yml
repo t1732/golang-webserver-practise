@@ -1,0 +1,16 @@
+# database setting
+#
+#   環境変数を指定した場合はそちらが優先されます
+#     DB_HOST_ADDRESS
+#     DB_HOST_PORT
+#     DB_HOST_DBNAME
+#     DB_USER_NAME
+#     DB_USER_PSSSWORD
+#
+host:
+  address: 127.0.0.1
+  port: 3306
+  dbname: golang_webserver_practise
+user:
+  name: root
+  password:
