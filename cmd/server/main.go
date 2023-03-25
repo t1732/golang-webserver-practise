@@ -14,6 +14,7 @@ import (
 	"golang-webserver-practise/internal/interfaces/routes"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 var (
@@ -41,6 +42,10 @@ func main() {
 	e := echo.New()
 	e.Logger.SetLevel(config.App.LogLevel())
 	routes.RestRouting(e)
+
+	// middleware
+	e.Use(middleware.RequestID())
+	e.Use(middleware.Logger())
 
 	// Start server
 	fmt.Printf("running... %s mode", appEnv)
