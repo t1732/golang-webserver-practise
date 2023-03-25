@@ -9,7 +9,6 @@ import (
 	infra "golang-webserver-practise/internal/infrastructure"
 
 	"github.com/labstack/echo/v4"
-	"gorm.io/gorm/logger"
 )
 
 var (
@@ -29,11 +28,7 @@ func main() {
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
 	}
 
-	logLevel := logger.Warn
-	if config.App.IsDevelopment() {
-		logLevel = logger.Info
-	}
-	if _, err := infra.Init(logLevel); err != nil {
+	if _, err := infra.Init(config.App.GormLogLevel()); err != nil {
 		panic(fmt.Errorf("DB init error: %s \n", err))
 	}
 
