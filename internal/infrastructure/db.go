@@ -53,8 +53,6 @@ func Init() (*gorm.DB, error) {
 		Colorful:                  true,
 	})
 
-	fmt.Printf("db-config: %s \n", b.String())
-
 	db, err = gorm.Open(mysql.Open(b.String()), &gorm.Config{
 		SkipDefaultTransaction: true, // デフォルトのトランザクション機能を無効化
 		PrepareStmt:            true, // プリペアードステートメントキャッシュ有効化
