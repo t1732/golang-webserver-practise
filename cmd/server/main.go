@@ -3,10 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"net/http"
 
 	"golang-webserver-practise/internal/config"
 	infra "golang-webserver-practise/internal/infrastructure"
+	"golang-webserver-practise/internal/interfaces/routes"
 
 	"github.com/labstack/echo/v4"
 )
@@ -33,10 +33,7 @@ func main() {
 	}
 
 	e := echo.New()
-
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
-	})
+	routes.RestRouting(e)
 
 	fmt.Printf("running... mode:%s", appEnv)
 	e.Logger.Fatal(e.Start(":" + Port))
