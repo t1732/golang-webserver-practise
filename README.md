@@ -5,6 +5,7 @@
 ## run
 
 set environment
+
 ```bash
 export DB_USER=root
 export DB_PASS=
@@ -18,6 +19,12 @@ git clone git@github.com:t1732/golang-webserver-practise.git
 cd golang-webserver-practise
 go install
 docker compose up -d
-go run cmd/migrate/main.go
-go run cmd/server/main.go
+make db/migrate
+make s
+```
+
+サーバの待受 port を 8080 に変更したい場合 (デフォルト 3000 ポート)
+
+```bash
+make s PORT=8080
 ```
