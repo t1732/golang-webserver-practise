@@ -10,6 +10,7 @@ import (
 
 	"golang-webserver-practise/internal/config"
 	"golang-webserver-practise/internal/infrastructure/schemas"
+
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -20,7 +21,7 @@ var (
 	err error
 )
 
-func Init() (*gorm.DB, error) {
+func Init(llv logger.LogLevel) (*gorm.DB, error) {
 	fmt.Println("database connecting...")
 
 	env := os.Getenv("SERVER_ENV")
@@ -41,14 +42,9 @@ func Init() (*gorm.DB, error) {
 	}
 
 	newLog := log.New(os.Stdout, "\r\n", log.LstdFlags)
-	logLevel := logger.Warn
-	if env == "development" {
-		logLevel = logger.Info
-	}
-
 	newLogger := logger.New(newLog, logger.Config{
 		SlowThreshold:             time.Second,
-		LogLevel:                  logLevel,
+		LogLevel:                  llv,
 		IgnoreRecordNotFoundError: true,
 		Colorful:                  true,
 	})
@@ -71,12 +67,12 @@ func GetDB() *gorm.DB {
 	return db
 }
 
-func Migrate() {
-	Init()
+func Migrate(llv logger.LogLevel) {
+	Init(llv)
 	schemas.MigrateUserTable(db)
 }
 
-func Reset() {
-	Init()
+func Reset(llv logger.LogLevel) {
+	Init(llv)
 	schemas.ResetUserTable(db)
 }
