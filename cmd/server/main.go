@@ -11,10 +11,18 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-var appEnv string
+var (
+	appEnv string
+	Port   string
+)
+
+func init() {
+	flag.StringVar(&appEnv, "e", "development", "environment")
+	flag.StringVar(&Port, "p", "3000", "server port")
+}
 
 func main() {
-	flagParse()
+	flag.Parse()
 
 	if err := config.Init(appEnv); err != nil {
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
@@ -30,10 +38,6 @@ func main() {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
 
-	e.Logger.Fatal(e.Start(":3000"))
-}
-
-func flagParse() {
-	flag.StringVar(&appEnv, "e", "development", "environment")
-	flag.Parse()
+	fmt.Printf("running... mode:%s", appEnv)
+	e.Logger.Fatal(e.Start(":" + Port))
 }
