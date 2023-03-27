@@ -41,7 +41,7 @@ func main() {
 	// Setup
 	e := echo.New()
 	e.Logger.SetLevel(config.App.LogLevel())
-	routes.RestRouting(e)
+	routes.Init(e)
 
 	// middleware
 	e.Use(middleware.RequestID())
