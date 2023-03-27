@@ -29,11 +29,21 @@ func initDatabaseConfig() error {
 	// 環境変数名をアンダーバー区切りにする
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	// 環境変数がある場合はそれを優先する
-	v.BindEnv("host.address")
-	v.BindEnv("host.port")
-	v.BindEnv("host.dbname")
-	v.BindEnv("user.name")
-	v.BindEnv("user.password")
+	if err := v.BindEnv("host.address"); err != nil {
+		return err
+	}
+	if err := v.BindEnv("host.port"); err != nil {
+		return err
+	}
+	if err := v.BindEnv("host.dbname"); err != nil {
+		return err
+	}
+	if err := v.BindEnv("user.name"); err != nil {
+		return err
+	}
+	if err := v.BindEnv("user.password"); err != nil {
+		return err
+	}
 
 	if err := v.ReadInConfig(); err != nil {
 		return err

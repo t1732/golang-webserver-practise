@@ -18,16 +18,10 @@ import (
 
 var (
 	db  *gorm.DB
-	err error
 )
 
 func Init(llv logger.LogLevel) (*gorm.DB, error) {
 	fmt.Println("database connecting...")
-
-	env := os.Getenv("SERVER_ENV")
-	if env == "" {
-		env = "development"
-	}
 
 	t, err := template.
 		New("dsn").
@@ -67,12 +61,16 @@ func GetDB() *gorm.DB {
 	return db
 }
 
-func Migrate(llv logger.LogLevel) {
-	Init(llv)
-	schemas.MigrateUserTable(db)
+func Migrate(llv logger.LogLevel) error {
+	if _, err := Init(llv); err != nil {
+		return err
+	}
+	return schemas.MigrateUserTable(db)
 }
 
-func Reset(llv logger.LogLevel) {
-	Init(llv)
-	schemas.ResetUserTable(db)
+func Reset(llv logger.LogLevel) error {
+	if _, err := Init(llv); err != nil {
+		return err
+	}
+	return schemas.ResetUserTable(db)
 }
