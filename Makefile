@@ -2,39 +2,46 @@ GO_CMD     := go
 GO_RUN     := $(GO_CMD) run
 GO_BUILD   := $(GO_CMD) build
 GO_TEST    := $(GO_CMD) test -v
-GO_VET     := $(GO_CMD) vet
-GO_FMT     := $(GO_CMD) fmt
-GO_LDFLAGS := -ldflags="-s -w" # FYI: https://pkg.go.dev/cmd/link
 GOOS       := $(shell go env GOOS)
+# FYI: https://pkg.go.dev/cmd/link
+GO_LDFLAGS := -ldflags="-s -w"
 TARGETS    := bin/server bin/migrate
 
-ifeq ($(PORT),)
-  RUN_SERVER := $(GO_RUN) cmd/server/main.go
-else
-  RUN_SERVER := $(GO_RUN) cmd/server/main.go -p $(PORT)
-endif
+default: clean build
 
-.PHONEY: default build clean test fmt server db/migrate db/reset
-
-default: fmt vet test build
 build: $(TARGETS)
-s: server
-
-bin/server:
+bin/server: cmd/server/main.go
 	env GOOS=$(GOOS) $(GO_BUILD) $(GO_LDFLAGS) -o $@ cmd/server/main.go
-bin/migrate:
+bin/migrate: cmd/migrate/main.go
 	env GOOS=$(GOOS) $(GO_BUILD) $(GO_LDFLAGS) -o $@ cmd/migrate/main.go
+
+.PHONEY: clean fmt lint test
 clean:
 	rm -rf $(TARGETS) ./vendor
-vet:
-	$(GO_VET) ./...
+fmt:
+	$(GO_CMD) fmt ./...
+lint:
+	golint -set_exit_status $$(go list ./...)
+	$(GO_CMD) vet ./...
 test:
 	env GOOS=$(GOOS) $(GO_TEST) ./...
-fmt:
-	$(GO_FMT) ./...
-server:
-	$(RUN_SERVER)
-db/migrate:
-	$(GO_RUN) cmd/migrate/main.go
-db/reset:
-	$(GO_RUN) cmd/migrate/main.go -m reset
+
+.PHONEY: db-migrate db-migrate-reset
+db-migrate: cmd/migrate/main.go
+	@$(GO_RUN) cmd/migrate/main.go
+db-migrate-reset: cmd/migrate/main.go
+	@$(GO_RUN) cmd/migrate/main.go -m reset
+
+.PHONEY: install-mod install-golint
+install-mod:
+	@$(GO_CMD) mod tidy
+install-golint:
+	@if ! type golint; then go get -u golang.org/x/lint/golint ; fi
+
+dev-init: install-mod install-golint db-migrate-reset
+dev: cmd/server/main.go
+	@if [ -n "$${PORT}" ]; then \
+		$(GO_RUN) cmd/server/main.go -p $${PORT}; \
+	else \
+		$(GO_RUN) cmd/server/main.go; \
+	fi
