@@ -21,7 +21,7 @@ clean:
 fmt:
 	$(GO_CMD) fmt ./...
 lint:
-	golint -set_exit_status $$(go list ./...)
+	golangci-lint run
 	$(GO_CMD) vet ./...
 test:
 	env GOOS=$(GOOS) $(GO_TEST) ./...
@@ -32,13 +32,16 @@ db-migrate: cmd/migrate/main.go
 db-migrate-reset: cmd/migrate/main.go
 	@$(GO_RUN) cmd/migrate/main.go -m reset
 
-.PHONEY: install-mod install-golint
+.PHONEY: install-mod echo-linter-install
 install-mod:
 	@$(GO_CMD) mod tidy
-install-golint:
-	@if ! type golint; then go get -u golang.org/x/lint/golint ; fi
+echo-linter-install:
+	@echo '\ncheck if golangci-lint is installed.'; \
+	if ! type golangci-lint; then \
+		echo 'Please install golangci-lint. (brew install golangci-lint)'; \
+	fi
 
-dev-init: install-mod install-golint db-migrate-reset
+dev-init: install-mod db-migrate-reset echo-linter-install
 dev: cmd/server/main.go
 	@if [ -n "$${PORT}" ]; then \
 		$(GO_RUN) cmd/server/main.go -p $${PORT}; \

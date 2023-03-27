@@ -27,3 +27,19 @@ make dev
 ```bash
 make dev PORT=8080
 ```
+
+## linter
+
+[golangci-lint](https://golangci-lint.run/)
+
+install
+
+```bash
+brew install golangci-lint
+```
+
+run
+
+```bash
+make lint
+```
