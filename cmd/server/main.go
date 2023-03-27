@@ -34,14 +34,15 @@ func main() {
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
 	}
 
-	if _, err := infra.Init(config.App.GormLogLevel()); err != nil {
+	db, err := infra.Init(config.App.GormLogLevel())
+	if err != nil {
 		panic(fmt.Errorf("DB init error: %s \n", err))
 	}
 
 	// Setup
 	e := echo.New()
 	e.Logger.SetLevel(config.App.LogLevel())
-	routes.Init(e)
+	routes.Init(e, db)
 
 	// middleware
 	e.Use(middleware.RequestID())

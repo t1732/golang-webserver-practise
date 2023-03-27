@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	db  *gorm.DB
+	db *gorm.DB
 )
 
 func Init(llv logger.LogLevel) (*gorm.DB, error) {
