@@ -10,7 +10,7 @@
 host:
   address: 127.0.0.1
   port: 3306
-  dbname: golang_webserver_practise
+  dbname: golang_webserver_practise_development
 user:
   name: root
   password:

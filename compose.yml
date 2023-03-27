@@ -5,6 +5,7 @@ services:
     restart: always
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: "golang_webserver_practise_development"
     ports:
       - 3306:3306
     healthcheck:
