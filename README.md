@@ -28,6 +28,13 @@ make dev
 make dev PORT=8080
 ```
 
+## live reload
+
+```bash
+go install github.com/cosmtrek/air@latest
+make dev
+```
+
 ## linter
 
 [golangci-lint](https://golangci-lint.run/)

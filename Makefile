@@ -5,6 +5,7 @@ GO_TEST    := $(GO_CMD) test -v
 GOOS       := $(shell go env GOOS)
 # FYI: https://pkg.go.dev/cmd/link
 GO_LDFLAGS := -ldflags="-s -w"
+AIR_CMD    := air -c .air.toml
 TARGETS    := bin/server bin/migrate
 
 default: clean build
@@ -31,7 +32,7 @@ db-migrate: cmd/migrate/main.go
 db-migrate-reset: cmd/migrate/main.go
 	@$(GO_RUN) cmd/migrate/main.go -m reset
 
-.PHONEY: install-mod echo-linter-install
+.PHONEY: install-mod echo-linter-install echo-air-install
 install-mod:
 	@$(GO_CMD) mod tidy
 echo-linter-install:
@@ -39,11 +40,28 @@ echo-linter-install:
 	if ! type golangci-lint; then \
 		echo 'Please install golangci-lint. (brew install golangci-lint)'; \
 	fi
+echo-air-install:
+	@echo '\ncheck if air is installed.'; \
+	if ! type air; then \
+		echo 'Please install air. (go install github.com/cosmtrek/air@latest)'; \
+	fi
 
-dev-init: install-mod db-migrate-reset echo-linter-install
-dev: cmd/server/main.go
+dev-init: install-mod db-migrate-reset echo-linter-install echo-air-install
+dev:
+	@if type air; then \
+		$(MAKE) dev-air; \
+	else\
+		$(MAKE) dev-run; \
+	fi
+dev-run: cmd/server/main.go
 	@if [ -n "$${PORT}" ]; then \
 		$(GO_RUN) cmd/server/main.go -p $${PORT}; \
 	else \
 		$(GO_RUN) cmd/server/main.go; \
+	fi
+dev-air: cmd/server/main.go
+	@if [ -n "$${PORT}" ]; then \
+		$(AIR_CMD) cmd/server/main.go -- -p $${PORT}; \
+	else \
+		$(AIR_CMD) cmd/server/main.go; \
 	fi
