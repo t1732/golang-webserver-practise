@@ -3,28 +3,25 @@ package handler
 import (
 	"net/http"
 
+	"golang-webserver-practise/internal/registory"
+
 	"github.com/labstack/echo/v4"
-	"gorm.io/gorm"
 )
 
 type HealthcheckHandler interface {
 	Show(c echo.Context) error
 }
 
-type helthcheck struct {
-	db *gorm.DB
+type helthcheckImpl struct {
+	repo registory.Repository
 }
 
-func NewHealthcheck(db *gorm.DB) HealthcheckHandler {
-	return &helthcheck{db}
+func NewHealthcheckImpl(repo registory.Repository) HealthcheckHandler {
+	return &helthcheckImpl{repo}
 }
 
-func (h *helthcheck) Show(c echo.Context) error {
-	sqlDB, err := h.db.DB()
-	if err != nil {
-		return err
-	}
-	if err := sqlDB.Ping(); err != nil {
+func (h *helthcheckImpl) Show(c echo.Context) error {
+	if err := h.repo.NewDBinfoRepository().Ping(); err != nil {
 		return err
 	}
 
