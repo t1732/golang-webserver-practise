@@ -2,7 +2,7 @@
 
 * go 1.20
 
-## run
+## run local
 
 set environment
 
@@ -17,7 +17,7 @@ export DB_NAME=golang_webserver_practise_development
 ```bash
 git clone git@github.com:t1732/golang-webserver-practise.git
 cd golang-webserver-practise
-docker compose up -d
+docker compose up -d db
 make dev-init
 make dev
 ```
@@ -28,11 +28,19 @@ make dev
 make dev PORT=8080
 ```
 
-## live reload
+### live reload
 
 ```bash
 go install github.com/cosmtrek/air@latest
 make dev
+```
+
+## run container
+
+```bash
+git clone git@github.com:t1732/golang-webserver-practise.git
+cd golang-webserver-practise
+docker compose up -d
 ```
 
 ## linter

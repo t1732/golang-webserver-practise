@@ -1,5 +1,18 @@
-version: '3'
+version: '3.8'
 services:
+  app:
+    build:
+      context: .
+      dockerfile: compose/app/Containerfile
+    restart: always
+    environment:
+      DB_HOST_ADDRESS: db
+    ports:
+      - 3000:3000
+    volumes:
+      - ./:/app
+      - .cache:/root/.cache
+
   db:
     image: public.ecr.aws/docker/library/mysql:8.0
     restart: always

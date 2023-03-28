@@ -20,11 +20,13 @@ import (
 var (
 	appEnv string
 	Port   string
+	BindIP string
 )
 
 func init() {
 	flag.StringVar(&appEnv, "e", "development", "environment")
 	flag.StringVar(&Port, "p", "3000", "server port")
+	flag.StringVar(&BindIP, "b", "0.0.0.0", "binding ip address")
 }
 
 func main() {
@@ -51,7 +53,7 @@ func main() {
 	// Start server
 	fmt.Printf("running... %s mode", appEnv)
 	go func() {
-		if err := e.Start(":" + Port); err != nil && err != http.ErrServerClosed {
+		if err := e.Start(BindIP + ":" + Port); err != nil && err != http.ErrServerClosed {
 			e.Logger.Fatal("shutting down the server")
 		}
 	}()
