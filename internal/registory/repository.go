@@ -9,6 +9,7 @@ import (
 
 type Repository interface {
 	NewDBinfoRepository() repository.DBinfo
+	NewUserRepository() repository.User
 }
 
 type repositoryImpl struct {
@@ -19,6 +20,10 @@ func NewRepositoryImpl(db *gorm.DB) Repository {
 	return &repositoryImpl{db: db}
 }
 
-func (r *repositoryImpl) NewDBinfoRepository() repository.DBinfo {
-	return dao.NewDBinfoImpl(r.db)
+func (impl *repositoryImpl) NewDBinfoRepository() repository.DBinfo {
+	return dao.NewDBinfoImpl(impl.db)
+}
+
+func (impl *repositoryImpl) NewUserRepository() repository.User {
+	return dao.NewUserImpl(impl.db)
 }

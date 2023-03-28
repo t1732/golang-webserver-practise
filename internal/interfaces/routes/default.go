@@ -16,4 +16,8 @@ func healthcheckRouting(e *echo.Echo, db *gorm.DB) {
 	repo := registory.NewRepositoryImpl(db)
 
 	e.GET("/healthcheck", handler.NewHealthcheckImpl(repo).Show)
+
+	user := handler.NewUserImpl(repo)
+	e.GET("/users", user.Index)
+	e.GET("/users/:id", user.Show)
 }

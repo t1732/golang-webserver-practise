@@ -14,7 +14,7 @@ type User struct {
 	Name      string `gorm:"size:255;index"`
 }
 
-type Users []Users
+type Users []User
 
 func (u *User) ConvertToModel() *model.User {
 	return &model.User{
@@ -24,4 +24,14 @@ func (u *User) ConvertToModel() *model.User {
 		Email:     u.Email,
 		Name:      u.Name,
 	}
+}
+
+func (users Users) ConvertToModel() *model.Users {
+	result := make(model.Users, len(users))
+
+	for i, u := range users {
+		result[i] = *u.ConvertToModel()
+	}
+
+	return &result
 }
