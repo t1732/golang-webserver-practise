@@ -25,27 +25,29 @@ type ErrorResponse struct {
 
 var (
 	appEnv string
-	Port   string
-	BindIP string
+	port   string
+	bindIP string
+	db     *gorm.DB
 )
 
 func init() {
-	flag.StringVar(&appEnv, "e", "development", "environment")
-	flag.StringVar(&Port, "p", "3000", "server port")
-	flag.StringVar(&BindIP, "b", "", "binding ip address") // default: 0.0.0.0
+	appEnv := flag.String("e", "development", "environment")
+	if err := config.Init(*appEnv); err != nil {
+		panic(fmt.Errorf("Fatal error config file: %s \n", err))
+	}
+
+	var dbErr error
+	db, dbErr = infra.Init(config.App.GormLogLevel())
+	if dbErr != nil {
+		panic(fmt.Errorf("DB init error: %s \n", dbErr))
+	}
+
+	flag.StringVar(&port, "p", "3000", "server port")
+	flag.StringVar(&bindIP, "b", "", "binding ip address") // default: 0.0.0.0
 }
 
 func main() {
 	flag.Parse()
-
-	if err := config.Init(appEnv); err != nil {
-		panic(fmt.Errorf("Fatal error config file: %s \n", err))
-	}
-
-	db, err := infra.Init(config.App.GormLogLevel())
-	if err != nil {
-		panic(fmt.Errorf("DB init error: %s \n", err))
-	}
 
 	// Setup
 	e := echo.New()
@@ -61,7 +63,7 @@ func main() {
 	// Start server
 	fmt.Printf("running... %s mode", appEnv)
 	go func() {
-		if err := e.Start(BindIP + ":" + Port); err != nil && err != http.ErrServerClosed {
+		if err := e.Start(bindIP + ":" + port); err != nil && err != http.ErrServerClosed {
 			e.Logger.Fatal("shutting down the server")
 		}
 	}()
