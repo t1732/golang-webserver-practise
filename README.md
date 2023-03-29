@@ -40,6 +40,7 @@ make dev
 ```bash
 git clone git@github.com:t1732/golang-webserver-practise.git
 cd golang-webserver-practise
+mkdir .go-build
 docker compose up -d
 ```
 
