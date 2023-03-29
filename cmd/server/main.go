@@ -51,6 +51,7 @@ func main() {
 
 	// Setup
 	e := echo.New()
+	e.Debug = config.App.IsDevelopment()
 	e.Logger.SetLevel(config.App.LogLevel())
 	routes.Init(e, db)
 
