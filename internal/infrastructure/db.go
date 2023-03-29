@@ -16,10 +16,6 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-var (
-	db *gorm.DB
-)
-
 func Init(llv logger.LogLevel) (*gorm.DB, error) {
 	fmt.Println("database connecting...")
 
@@ -43,7 +39,7 @@ func Init(llv logger.LogLevel) (*gorm.DB, error) {
 		Colorful:                  true,
 	})
 
-	db, err = gorm.Open(mysql.Open(b.String()), &gorm.Config{
+	db, err := gorm.Open(mysql.Open(b.String()), &gorm.Config{
 		SkipDefaultTransaction: true, // デフォルトのトランザクション機能を無効化
 		PrepareStmt:            true, // プリペアードステートメントキャッシュ有効化
 		Logger:                 newLogger,
@@ -57,19 +53,17 @@ func Init(llv logger.LogLevel) (*gorm.DB, error) {
 	return db, nil
 }
 
-func GetDB() *gorm.DB {
-	return db
-}
-
 func Migrate(llv logger.LogLevel) error {
-	if _, err := Init(llv); err != nil {
+	db, err := Init(llv)
+	if err != nil {
 		return err
 	}
 	return schemas.MigrateUserTable(db)
 }
 
 func Reset(llv logger.LogLevel) error {
-	if _, err := Init(llv); err != nil {
+	db, err := Init(llv)
+	if err != nil {
 		return err
 	}
 	return schemas.ResetUserTable(db)
