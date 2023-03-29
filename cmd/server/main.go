@@ -32,7 +32,7 @@ var (
 func init() {
 	flag.StringVar(&appEnv, "e", "development", "environment")
 	flag.StringVar(&Port, "p", "3000", "server port")
-	flag.StringVar(&BindIP, "b", "0.0.0.0", "binding ip address")
+	flag.StringVar(&BindIP, "b", "", "binding ip address") // default: 0.0.0.0
 }
 
 func main() {

@@ -46,6 +46,7 @@ echo-air-install:
 		echo 'Please install air. (go install github.com/cosmtrek/air@latest)'; \
 	fi
 
+BIND_IP = 127.0.0.1
 dev-init: install-mod db-migrate-reset echo-linter-install echo-air-install
 dev:
 	@if type air; then \
@@ -55,13 +56,13 @@ dev:
 	fi
 dev-run: cmd/server/main.go
 	@if [ -n "$${PORT}" ]; then \
-		$(GO_RUN) cmd/server/main.go -p $${PORT}; \
+		$(GO_RUN) cmd/server/main.go -p $${PORT} -b $(BIND_IP); \
 	else \
-		$(GO_RUN) cmd/server/main.go; \
+		$(GO_RUN) cmd/server/main.go -b $(BIND_IP); \
 	fi
 dev-air: cmd/server/main.go
 	@if [ -n "$${PORT}" ]; then \
-		$(AIR_CMD) cmd/server/main.go -- -p $${PORT}; \
+		$(AIR_CMD) -- -p $${PORT} -b $(BIND_IP); \
 	else \
-		$(AIR_CMD) cmd/server/main.go; \
+		$(AIR_CMD) -- -b $(BIND_IP); \
 	fi
