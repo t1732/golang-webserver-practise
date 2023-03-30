@@ -34,11 +34,16 @@ var (
 func init() {
 	appEnv := flag.String("e", "development", "environment")
 	if err := config.Init(*appEnv); err != nil {
-		panic(fmt.Errorf("Fatal error config file: %s \n", err))
+		panic(fmt.Errorf("Fatal error config loading: %s \n", err))
+	}
+
+	dsn, err := config.DB().GetDsn()
+	if err != nil {
+		panic(fmt.Errorf("Fatal error database dsn get: %s \n", err))
 	}
 
 	var dbErr error
-	db, dbErr = infra.Init(config.App().GormLogLevel())
+	db, dbErr = infra.Init(&infra.InitOption{Debug: true, Dsn: dsn})
 	if dbErr != nil {
 		panic(fmt.Errorf("DB init error: %s \n", dbErr))
 	}

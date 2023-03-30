@@ -4,8 +4,6 @@ import (
 	"fmt"
 
 	"golang-webserver-practise/pkg/sliceutil"
-
-	"gorm.io/gorm/logger"
 )
 
 var appEnvValues = []string{"development", "staging", "production"}
@@ -45,12 +43,4 @@ func (a *AppConfig) IsStaging() bool {
 
 func (a *AppConfig) IsProduction() bool {
 	return a.env == appEnvValues[2]
-}
-
-func (a *AppConfig) GormLogLevel() logger.LogLevel {
-	if a.IsDevelopment() {
-		return logger.Info
-	}
-
-	return logger.Warn
 }
