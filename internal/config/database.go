@@ -1,6 +1,8 @@
 package config
 
 import (
+	"bytes"
+	"html/template"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -49,9 +51,25 @@ func initDatabaseConfig() error {
 		return err
 	}
 
-	if err := v.Unmarshal(&DB); err != nil {
+	if err := v.Unmarshal(&_dbCnf); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (c *dbConfig) GetDsn() (string, error) {
+	t, err := template.
+		New("dsn").
+		Parse("{{.User.Name}}:{{.User.Password}}@tcp({{.Host.Address}}:{{.Host.Port}})/{{.Host.DBname}}?charset=utf8mb4&parseTime=True&loc=Local")
+	if err != nil {
+		return "", err
+	}
+
+	var b bytes.Buffer
+	if err = t.Execute(&b, c); err != nil {
+		return "", err
+	}
+
+	return b.String(), nil
 }

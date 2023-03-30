@@ -1,8 +1,8 @@
 package config
 
 var (
-	App AppConfig
-	DB  dbConfig
+	_appCnf AppConfig
+	_dbCnf  dbConfig
 )
 
 func Init(env string) error {
@@ -15,4 +15,12 @@ func Init(env string) error {
 	}
 
 	return nil
+}
+
+func App() *AppConfig {
+	return &_appCnf
+}
+
+func DB() *dbConfig {
+	return &_dbCnf
 }

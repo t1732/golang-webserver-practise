@@ -1,9 +1,7 @@
 package infrastructure
 
 import (
-	"bytes"
 	"fmt"
-	"html/template"
 	"log"
 	"os"
 	"time"
@@ -19,18 +17,6 @@ import (
 func Init(llv logger.LogLevel) (*gorm.DB, error) {
 	fmt.Println("database connecting...")
 
-	t, err := template.
-		New("dsn").
-		Parse("{{.User.Name}}:{{.User.Password}}@tcp({{.Host.Address}}:{{.Host.Port}})/{{.Host.DBname}}?charset=utf8mb4&parseTime=True&loc=Local")
-	if err != nil {
-		return nil, err
-	}
-
-	var b bytes.Buffer
-	if err = t.Execute(&b, config.DB); err != nil {
-		return nil, err
-	}
-
 	newLog := log.New(os.Stdout, "\r\n", log.LstdFlags)
 	newLogger := logger.New(newLog, logger.Config{
 		SlowThreshold:             time.Second,
@@ -39,7 +25,11 @@ func Init(llv logger.LogLevel) (*gorm.DB, error) {
 		Colorful:                  true,
 	})
 
-	db, err := gorm.Open(mysql.Open(b.String()), &gorm.Config{
+	dsn, err := config.DB().GetDsn()
+	if err != nil {
+		return nil, err
+	}
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		SkipDefaultTransaction: true, // デフォルトのトランザクション機能を無効化
 		PrepareStmt:            true, // プリペアードステートメントキャッシュ有効化
 		Logger:                 newLogger,

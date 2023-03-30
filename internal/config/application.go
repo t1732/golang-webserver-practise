@@ -11,40 +11,40 @@ import (
 var appEnvValues = []string{"development", "staging", "production"}
 
 type AppConfig struct {
-	Env string
+	env string
 }
 
-type AppEnvError struct {
+type AppConfigError struct {
 	message string
 }
 
 // Application 設定の初期化
 func initApplicationConfig(env string) error {
 	if !sliceutil.ContainsChar(appEnvValues, env) {
-		return &AppEnvError{fmt.Sprintf("%s is an unauthorized environmental name.", env)}
+		return &AppConfigError{fmt.Sprintf("%s is an unauthorized environmental name.", env)}
 	}
 
 	appCnf := &AppConfig{}
-	appCnf.Env = env
-	App = *appCnf
+	appCnf.env = env
+	_appCnf = *appCnf
 
 	return nil
 }
 
-func (e *AppEnvError) Error() string {
+func (e *AppConfigError) Error() string {
 	return e.message
 }
 
 func (a *AppConfig) IsDevelopment() bool {
-	return a.Env == appEnvValues[0]
+	return a.env == appEnvValues[0]
 }
 
 func (a *AppConfig) IsStaging() bool {
-	return a.Env == appEnvValues[1]
+	return a.env == appEnvValues[1]
 }
 
 func (a *AppConfig) IsProduction() bool {
-	return a.Env == appEnvValues[2]
+	return a.env == appEnvValues[2]
 }
 
 func (a *AppConfig) GormLogLevel() logger.LogLevel {

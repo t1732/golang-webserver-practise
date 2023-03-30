@@ -38,7 +38,7 @@ func init() {
 	}
 
 	var dbErr error
-	db, dbErr = infra.Init(config.App.GormLogLevel())
+	db, dbErr = infra.Init(config.App().GormLogLevel())
 	if dbErr != nil {
 		panic(fmt.Errorf("DB init error: %s \n", dbErr))
 	}
@@ -52,7 +52,7 @@ func main() {
 
 	// Setup
 	e := echo.New()
-	e.Debug = config.App.IsDevelopment()
+	e.Debug = config.App().IsDevelopment()
 	routes.Init(e, db)
 
 	// middleware
@@ -109,7 +109,7 @@ func customHTTPErrorHandler(err error, c echo.Context) {
 func loggerMiddleware() echo.MiddlewareFunc {
 	var logger *zap.Logger
 	var err error
-	if config.App.IsDevelopment() {
+	if config.App().IsDevelopment() {
 		logger, err = zap.NewDevelopment()
 	} else {
 		logger, err = zap.NewProduction()

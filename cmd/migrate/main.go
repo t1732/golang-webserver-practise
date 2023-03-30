@@ -27,11 +27,11 @@ func main() {
 
 	switch mode {
 	case "apply":
-		if err := infra.Migrate(config.App.GormLogLevel()); err != nil {
+		if err := infra.Migrate(config.App().GormLogLevel()); err != nil {
 			panic(fmt.Errorf("Fatal error migrate: %s \n", err))
 		}
 	case "reset":
-		if err := infra.Reset(config.App.GormLogLevel()); err != nil {
+		if err := infra.Reset(config.App().GormLogLevel()); err != nil {
 			panic(fmt.Errorf("Fatal error reset migrate: %s \n", err))
 		}
 	}

@@ -26,7 +26,7 @@ func healthcheckRouting(e *echo.Echo, db *gorm.DB) {
 	e.GET("/users/:id", user.Show)
 
 	// NOTE: 開発時の routes 定義情報確認用
-	if config.App.IsDevelopment() {
+	if config.App().IsDevelopment() {
 		e.GET("/routes", func(c echo.Context) error {
 			return c.JSON(http.StatusOK, sortingRoutes(e.Routes()))
 		})
