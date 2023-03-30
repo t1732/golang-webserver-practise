@@ -28,7 +28,7 @@ var (
 	appEnv string
 	port   string
 	bindIP string
-	db     *gorm.DB
+	dbConn *infra.Connection
 )
 
 func init() {
@@ -43,7 +43,7 @@ func init() {
 	}
 
 	var dbErr error
-	db, dbErr = infra.Init(&infra.InitOption{Debug: true, Dsn: dsn})
+	dbConn, dbErr = infra.Init(&infra.InitOption{Debug: true, Dsn: dsn})
 	if dbErr != nil {
 		panic(fmt.Errorf("DB init error: %s \n", dbErr))
 	}
@@ -58,7 +58,7 @@ func main() {
 	// Setup
 	e := echo.New()
 	e.Debug = config.App().IsDevelopment()
-	routes.Init(e, db)
+	routes.Init(e, dbConn.DB)
 
 	// middleware
 	e.Use(loggerMiddleware())

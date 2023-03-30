@@ -18,7 +18,11 @@ type InitOption struct {
 	Dsn   string
 }
 
-func Init(option *InitOption) (*gorm.DB, error) {
+type Connection struct {
+	DB *gorm.DB
+}
+
+func Init(option *InitOption) (*Connection, error) {
 	fmt.Println("database connecting...")
 
 	logLv := logger.Warn
@@ -45,21 +49,13 @@ func Init(option *InitOption) (*gorm.DB, error) {
 
 	fmt.Println("database connection done")
 
-	return db, nil
+	return &Connection{DB: db}, nil
 }
 
-func Migrate(option *InitOption) error {
-	db, err := Init(option)
-	if err != nil {
-		return err
-	}
-	return schemas.MigrateUserTable(db)
+func (c *Connection) Migrate() error {
+	return schemas.MigrateUserTable(c.DB)
 }
 
-func Reset(option *InitOption) error {
-	db, err := Init(option)
-	if err != nil {
-		return err
-	}
-	return schemas.ResetUserTable(db)
+func (c *Connection) Reset() error {
+	return schemas.ResetUserTable(c.DB)
 }

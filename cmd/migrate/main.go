@@ -31,15 +31,19 @@ func main() {
 	}
 
 	option := &infra.InitOption{Debug: true, Dsn: dsn}
+	c, err := infra.Init(option)
+	if err != nil {
+		panic(fmt.Errorf("Fatal error database init: %s \n", err))
+	}
 
 	switch mode {
 	case "apply":
-		if err := infra.Migrate(option); err != nil {
-			panic(fmt.Errorf("Fatal error migrate: %s \n", err))
+		if err := c.Migrate(); err != nil {
+			panic(fmt.Errorf("Fatal error db migrate: %s \n", err))
 		}
 	case "reset":
-		if err := infra.Reset(option); err != nil {
-			panic(fmt.Errorf("Fatal error reset migrate: %s \n", err))
+		if err := c.Reset(); err != nil {
+			panic(fmt.Errorf("Fatal error db reset: %s \n", err))
 		}
 	}
 }
