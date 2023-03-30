@@ -1,6 +1,10 @@
 package routes
 
 import (
+	"net/http"
+	"sort"
+
+	"golang-webserver-practise/internal/config"
 	"golang-webserver-practise/internal/interfaces/handler"
 	"golang-webserver-practise/internal/registory"
 
@@ -20,4 +24,18 @@ func healthcheckRouting(e *echo.Echo, db *gorm.DB) {
 	user := handler.NewUserImpl(repo)
 	e.GET("/users", user.Index)
 	e.GET("/users/:id", user.Show)
+
+	// NOTE: 開発時の routes 定義情報確認用
+	if config.App.IsDevelopment() {
+		e.GET("/routes", func(c echo.Context) error {
+			return c.JSON(http.StatusOK, sortingRoutes(e.Routes()))
+		})
+	}
+}
+
+func sortingRoutes(routes []*echo.Route) []*echo.Route {
+	sort.Slice(routes, func(i, j int) bool {
+		return routes[i].Name < routes[j].Name
+	})
+	return routes
 }

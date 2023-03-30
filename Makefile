@@ -66,7 +66,3 @@ dev-air: cmd/server/main.go
 	else \
 		$(AIR_CMD) -- -b $(BIND_IP); \
 	fi
-
-.PHONEY: routes
-routes: cmd/routes/main.go
-	@$(GO_RUN) cmd/routes/main.go
