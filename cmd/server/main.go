@@ -16,6 +16,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -52,12 +53,10 @@ func main() {
 	// Setup
 	e := echo.New()
 	e.Debug = config.App.IsDevelopment()
-	e.Logger.SetLevel(config.App.LogLevel())
 	routes.Init(e, db)
 
 	// middleware
-	e.Use(middleware.RequestID())
-	e.Use(middleware.Logger())
+	e.Use(loggerMiddleware())
 
 	e.HTTPErrorHandler = customHTTPErrorHandler
 
@@ -89,7 +88,6 @@ func customHTTPErrorHandler(err error, c echo.Context) {
 	case errors.Is(err, gorm.ErrRecordNotFound):
 		code = http.StatusNotFound
 		msg = err.Error()
-		c.Logger().Info(err)
 	case errors.As(err, &herr):
 		code = herr.Code
 		msg = herr.Message.(string)
@@ -97,13 +95,55 @@ func customHTTPErrorHandler(err error, c echo.Context) {
 	}
 
 	if code >= 500 {
-		c.Logger().Error(err)
+		zap.S().Error(err)
 	} else {
-		c.Logger().Info(err)
+		zap.S().Info(err)
 	}
 
 	resp := ErrorResponse{Message: msg}
 	if err := c.JSON(code, resp); err != nil {
-		c.Logger().Error(err)
+		zap.S().Error(err)
 	}
+}
+
+func loggerMiddleware() echo.MiddlewareFunc {
+	var logger *zap.Logger
+	var err error
+	if config.App.IsDevelopment() {
+		logger, err = zap.NewDevelopment()
+	} else {
+		logger, err = zap.NewProduction()
+	}
+	if err != nil {
+		panic(fmt.Errorf("Fatal zap new: %s \n", err))
+	}
+
+	zap.ReplaceGlobals(logger)
+
+	return middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
+		LogMethod:        true,
+		LogURI:           true,
+		LogStatus:        true,
+		LogRemoteIP:      true,
+		LogUserAgent:     true,
+		LogProtocol:      true,
+		LogLatency:       true,
+		LogContentLength: true,
+		LogResponseSize:  true,
+		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
+			logger.Info("request",
+				zap.String("method", v.Method),
+				zap.String("uri", v.URI),
+				zap.Int("status", v.Status),
+				zap.String("remote_ip", v.RemoteIP),
+				zap.String("protocol", v.Protocol),
+				zap.Int("latency", int(v.Latency)),
+				zap.String("content_length", v.ContentLength),
+				zap.Int64("response_size", v.ResponseSize),
+				zap.String("user_agent", v.UserAgent),
+			)
+
+			return nil
+		},
+	})
 }

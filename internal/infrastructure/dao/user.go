@@ -1,7 +1,6 @@
 package dao
 
 import (
-	"fmt"
 	"golang-webserver-practise/internal/domain/model"
 	"golang-webserver-practise/internal/infrastructure/dto"
 
@@ -35,7 +34,6 @@ func (impl *userImpl) FindById(id int64) (*model.User, error) {
 	var user dto.User
 
 	if err := impl.db.First(&user, id).Error; err != nil {
-		fmt.Println("error: " + err.Error())
 		return nil, err
 	}
 
