@@ -11,6 +11,8 @@ RUN sed -i -E 's/# (ja_JP.UTF-8)/\1/' /etc/locale.gen \
 
 RUN go install github.com/cosmtrek/air@latest
 
+ENV TZ /usr/share/zoneinfo/Asia/Tokyo
+
 WORKDIR /app
 
 EXPOSE 3000
