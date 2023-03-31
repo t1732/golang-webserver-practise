@@ -24,6 +24,7 @@ func healthcheckRouting(e *echo.Echo, db *gorm.DB) {
 	user := handler.NewUserImpl(repo)
 	e.GET("/users", user.Index)
 	e.GET("/users/:id", user.Show)
+	e.POST("/users", user.Create)
 
 	// NOTE: 開発時の routes 定義情報確認用
 	if config.App().IsDevelopment() {
