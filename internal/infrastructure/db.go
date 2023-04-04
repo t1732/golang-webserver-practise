@@ -14,8 +14,10 @@ import (
 )
 
 type InitOption struct {
-	Debug bool
-	Dsn   string
+	Debug        bool
+	Dsn          string
+	MaxOpenConns int
+	MaxIdleConns int
 }
 
 type Connection struct {
@@ -23,7 +25,7 @@ type Connection struct {
 }
 
 func Init(option *InitOption) (*Connection, error) {
-	fmt.Println("database connecting...")
+	fmt.Printf("database connecting... open:%d, idle:%d\n", option.MaxOpenConns, option.MaxIdleConns)
 
 	logLv := logger.Warn
 	if option.Debug {
@@ -47,7 +49,14 @@ func Init(option *InitOption) (*Connection, error) {
 		return nil, err
 	}
 
-	fmt.Println("database connection done")
+	sqlDB, err := db.DB()
+	if err != nil {
+		return nil, err
+	}
+
+	sqlDB.SetMaxOpenConns(option.MaxOpenConns)
+	sqlDB.SetMaxIdleConns(option.MaxIdleConns)
+	sqlDB.SetConnMaxLifetime(5 * time.Minute)
 
 	return &Connection{DB: db}, nil
 }

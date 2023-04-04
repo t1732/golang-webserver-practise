@@ -10,9 +10,11 @@ import (
 
 type dbConfig struct {
 	Host struct {
-		Address string
-		Port    int
-		DBname  string
+		Address      string
+		Port         int
+		MaxOpenConns int `mapstructure:"max_open_conns"`
+		MaxIdleConns int `mapstructure:"max_idle_conns"`
+		DBname       string
 	}
 	User struct {
 		Name     string
@@ -35,6 +37,12 @@ func initDatabaseConfig() error {
 		return err
 	}
 	if err := v.BindEnv("host.port"); err != nil {
+		return err
+	}
+	if err := v.BindEnv("host.max_open_conns"); err != nil {
+		return err
+	}
+	if err := v.BindEnv("host.max_idle_conns"); err != nil {
 		return err
 	}
 	if err := v.BindEnv("host.dbname"); err != nil {

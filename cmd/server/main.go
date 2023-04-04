@@ -52,7 +52,12 @@ func init() {
 	}
 
 	var dbErr error
-	dbConn, dbErr = infra.Init(&infra.InitOption{Debug: true, Dsn: dsn})
+	dbConn, dbErr = infra.Init(&infra.InitOption{
+		Debug:        true,
+		Dsn:          dsn,
+		MaxOpenConns: config.DB().Host.MaxOpenConns,
+		MaxIdleConns: config.DB().Host.MaxIdleConns,
+	})
 	if dbErr != nil {
 		panic(fmt.Errorf("DB init error: %s \n", dbErr))
 	}
