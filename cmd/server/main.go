@@ -17,6 +17,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/gommon/log"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -69,6 +70,9 @@ func main() {
 
 	// middleware
 	e.Use(loggerMiddleware())
+	e.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{
+		LogLevel: log.ERROR,
+	}))
 
 	e.HTTPErrorHandler = customHTTPErrorHandler
 	e.Validator = &CustomValidator{validator: validator.New()}
