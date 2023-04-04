@@ -36,6 +36,11 @@ func (e *AppConfigError) Error() string {
 	return e.message
 }
 
+// 実行モード名
+func (a *AppConfig) Env() string {
+	return a.env
+}
+
 func (a *AppConfig) IsDevelopment() bool {
 	return a.env == appEnvValues[0]
 }
@@ -48,6 +53,7 @@ func (a *AppConfig) IsProduction() bool {
 	return a.env == appEnvValues[2]
 }
 
+// 最大同時接続数
 func (a *AppConfig) MaxConnection() int {
 	return a.maxConnection
 }

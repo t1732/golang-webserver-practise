@@ -35,7 +35,6 @@ type (
 )
 
 var (
-	appEnv string
 	port   string
 	bindIP string
 	dbConn *infra.Connection
@@ -80,7 +79,7 @@ func main() {
 	e.Validator = &CustomValidator{validator: validator.New()}
 
 	// Start server
-	fmt.Printf("running... env:%s, max connection:%d", appEnv, config.App().MaxConnection())
+	fmt.Printf("running... env:%s, max connection:%d", config.App().Env(), config.App().MaxConnection())
 	l, err := net.Listen("tcp", bindIP+":"+port)
 	if err != nil {
 		e.Logger.Fatal(err)
