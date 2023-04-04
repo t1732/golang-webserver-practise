@@ -5,6 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -19,6 +20,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 	"go.uber.org/zap"
+	"golang.org/x/net/netutil"
 	"gorm.io/gorm"
 )
 
@@ -78,9 +80,14 @@ func main() {
 	e.Validator = &CustomValidator{validator: validator.New()}
 
 	// Start server
-	fmt.Printf("running... %s mode", appEnv)
+	fmt.Printf("running... env:%s, max connection:%d", appEnv, config.App().MaxConnection())
+	l, err := net.Listen("tcp", bindIP+":"+port)
+	if err != nil {
+		e.Logger.Fatal(err)
+	}
+	e.Listener = netutil.LimitListener(l, config.App().MaxConnection())
 	go func() {
-		if err := e.Start(bindIP + ":" + port); err != nil && err != http.ErrServerClosed {
+		if err := e.Start(""); err != nil && err != http.ErrServerClosed {
 			e.Logger.Fatal("shutting down the server")
 		}
 	}()

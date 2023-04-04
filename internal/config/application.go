@@ -3,13 +3,15 @@ package config
 import (
 	"fmt"
 
+	"golang-webserver-practise/pkg/envloader"
 	"golang-webserver-practise/pkg/sliceutil"
 )
 
 var appEnvValues = []string{"development", "staging", "production"}
 
 type AppConfig struct {
-	env string
+	env           string
+	maxConnection int // 最大同時接続数
 }
 
 type AppConfigError struct {
@@ -24,6 +26,7 @@ func initApplicationConfig(env string) error {
 
 	appCnf := &AppConfig{}
 	appCnf.env = env
+	appCnf.maxConnection = envloader.GetInt("MAX_CONNECTION", 2)
 	_appCnf = *appCnf
 
 	return nil
@@ -43,4 +46,8 @@ func (a *AppConfig) IsStaging() bool {
 
 func (a *AppConfig) IsProduction() bool {
 	return a.env == appEnvValues[2]
+}
+
+func (a *AppConfig) MaxConnection() int {
+	return a.maxConnection
 }
